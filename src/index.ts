@@ -1,15 +1,16 @@
-import express, { Express } from 'express';
-import dotenv from 'dotenv';
+import WikimediaStream from "wikimedia-streams";
+import MediaWikiRecentChangeEvent from "wikimedia-streams/build/streams/MediaWikiRecentChangeEvent";
+let Address4 = require("ip-address").Address4;
 
-dotenv.config();
+const stream = new WikimediaStream("recentchange");
 
-const app: Express = express();
-const port: number = Number(process.env.PORT) || 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+stream.on("recentchange", (data: MediaWikiRecentChangeEvent, event) => {
+    if (data.wiki === "enwiki") {
+      try {
+        const ip = new Address4(data.user);
+        console.log(`${data.user}\t| ${data.type}\t| ${data.title}`);
+      }
+      catch (e) {
+      }
+    }
 });
